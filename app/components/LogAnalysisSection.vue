@@ -16,10 +16,10 @@
             id="logs"
             v-model="form.logs"
             rows="12"
-            placeholder="2024-01-01 12:00:01.123 UTC [12345] LOG: database system is ready to accept connections
-2024-01-01 12:00:05.456 UTC [12346] ERROR: relation &quot;missing_table&quot; does not exist at character 15
-2024-01-01 12:00:10.789 UTC [12347] WARNING: there is no transaction in progress
-2024-01-01 12:01:15.234 UTC [12348] LOG: duration: 15234.567 ms statement: SELECT * FROM large_table WHERE complex_condition = 'slow_query'"
+            placeholder="2024-01-01 10:00:00 UTC LOG: connection received: host=192.168.1.100 port=54321
+2024-01-01 10:00:01 UTC ERROR: password authentication failed for user &quot;admin&quot;
+2024-01-01 10:00:05 UTC LOG: connection authorized: user=myuser database=mydb
+2024-01-01 10:00:10 UTC WARNING: could not acquire lock on relation &quot;users&quot;"
             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm"
           ></textarea>
           <div class="mt-2 flex items-center space-x-4">
@@ -40,84 +40,54 @@
         </div>
 
         <!-- Environment -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label for="logs-environment" class="block text-sm font-medium text-gray-700 mb-2">Среда</label>
-            <select 
-              id="logs-environment"
-              v-model="form.environment" 
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="development">Development</option>
-              <option value="staging">Staging</option>
-              <option value="production">Production</option>
-              <option value="testing">Testing</option>
-            </select>
-          </div>
+        <div>
+          <label for="logs-environment" class="block text-sm font-medium text-gray-700 mb-2">Среда</label>
+          <select 
+            id="logs-environment"
+            v-model="environment" 
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            <option value="development">Development</option>
+            <option value="staging">Staging</option>
+            <option value="production">Production</option>
+            <option value="testing">Testing</option>
+          </select>
         </div>
 
         <!-- Server Info -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <label for="logs-version" class="block text-sm font-medium text-gray-700 mb-2">Версия PostgreSQL</label>
-            <input 
-              id="logs-version"
-              v-model="form.server_info.version"
-              type="text" 
-              placeholder="15.4"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-          </div>
-          <div>
-            <label for="logs-host" class="block text-sm font-medium text-gray-700 mb-2">Хост</label>
-            <input 
-              id="logs-host"
-              v-model="form.server_info.host"
-              type="text" 
-              placeholder="localhost"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-          </div>
-          <div>
-            <label for="logs-database" class="block text-sm font-medium text-gray-700 mb-2">База данных</label>
-            <input 
-              id="logs-database"
-              v-model="form.server_info.database"
-              type="text" 
-              placeholder="myapp"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-          </div>
+        <div>
+          <label for="server-info" class="block text-sm font-medium text-gray-700 mb-2">Информация о сервере</label>
+          <textarea 
+            id="server-info"
+            v-model="serverInfoText"
+            rows="4"
+            placeholder='{
+  "version": "15.2",
+  "host": "localhost", 
+  "port": "5432"
+}'
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm"
+          ></textarea>
+          <p class="text-xs text-gray-500 mt-1">Формат: JSON объект с информацией о сервере</p>
         </div>
 
-        <!-- Submit Button -->
+        <!-- Submit -->
         <div class="flex justify-end">
-          <button 
+          <button
             type="submit"
-            :disabled="loading || !canAnalyze"
-            class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+            :disabled="!canAnalyze || loading"
+            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50"
           >
-            <svg v-if="loading" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <span>{{ loading ? 'Анализируем...' : 'Анализировать логи' }}</span>
+            {{ loading ? 'Анализируем...' : '🔍 Проанализировать логи' }}
           </button>
         </div>
       </form>
-    </div>
 
-    <!-- Results -->
-    <div v-if="results" class="border-t border-gray-200">
-      <LogAnalysisResults :results="results" />
-    </div>
-
-    <!-- Error State -->
-    <div v-if="error" class="border-t border-gray-200 p-6">
-      <div class="bg-red-50 border border-red-200 rounded-lg p-4">
-        <div class="flex">
-          <svg class="w-5 h-5 text-red-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      <!-- Error -->
+      <div v-if="error" class="mt-6 bg-red-50 border border-red-200 rounded-lg p-4">
+        <div class="flex items-start">
+          <svg class="w-5 h-5 text-red-400 mt-0.5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
           </svg>
           <div>
             <h4 class="text-red-800 font-medium">Ошибка анализа</h4>
@@ -125,48 +95,59 @@
           </div>
         </div>
       </div>
+
+      <!-- Results -->
+      <div v-if="results" class="mt-6">
+        <LogAnalysisResults :results="results" />
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import type { LogAnalysisRequest, LogAnalysisResult, Environment } from '~/types/api'
+import type { LogsAnalyzeRequest, LogsAnalyzeResponse, Environment } from '~/types/api'
 
-const api = useApi()
+const analysisStore = useAnalysisStore()
 
 const loading = ref(false)
 const error = ref<string | null>(null)
-const results = ref<LogAnalysisResult | null>(null)
+const results = ref<LogsAnalyzeResponse | null>(null)
+const environment = ref<Environment>('production')
+const serverInfoText = ref('')
 
-const form = ref<LogAnalysisRequest>({
+const form = ref<LogsAnalyzeRequest>({
   logs: '',
-  environment: 'production' as Environment,
   server_info: {
-    version: '15.4',
-    host: 'localhost',
-    database: 'myapp'
-  }
+    version: '',
+    host: '',
+    database: ''
+  },
+  environment: 'production'
 })
 
 const canAnalyze = computed(() => {
-  return form.value.logs.trim().length > 0 && 
-         form.value.server_info.version && 
-         form.value.server_info.host && 
-         form.value.server_info.database
+  return form.value.logs.trim().length > 0
 })
 
 const loadSampleLogs = () => {
-  form.value.logs = `2024-01-01 12:00:01.123 UTC [12345] LOG: database system is ready to accept connections
-2024-01-01 12:00:05.456 UTC [12346] ERROR: relation "missing_table" does not exist at character 15
-2024-01-01 12:00:10.789 UTC [12347] WARNING: there is no transaction in progress
-2024-01-01 12:01:15.234 UTC [12348] LOG: duration: 15234.567 ms statement: SELECT * FROM large_table WHERE complex_condition = 'slow_query'
-2024-01-01 12:02:30.567 UTC [12349] LOG: checkpoint starting: time
-2024-01-01 12:02:35.678 UTC [12350] ERROR: duplicate key value violates unique constraint "users_email_key"
-2024-01-01 12:03:45.890 UTC [12351] LOG: duration: 2345.123 ms statement: UPDATE users SET last_login = NOW() WHERE id = 12345
-2024-01-01 12:04:12.345 UTC [12352] FATAL: password authentication failed for user "hacker"
-2024-01-01 12:05:23.456 UTC [12353] LOG: checkpoint complete: wrote 256 buffers (1.6%); 0 WAL file(s) added, 0 removed, 1 recycled
-2024-01-01 12:06:34.567 UTC [12354] WARNING: could not receive data from client: Connection reset by peer`
+  form.value.logs = `2024-01-01 10:00:00 UTC LOG: connection received: host=192.168.1.100 port=54321
+2024-01-01 10:00:01 UTC ERROR: password authentication failed for user "admin"
+2024-01-01 10:00:05 UTC LOG: connection authorized: user=myuser database=mydb
+2024-01-01 10:00:10 UTC WARNING: could not acquire lock on relation "users"
+2024-01-01 10:00:15 UTC LOG: duration: 1500.234 ms statement: SELECT * FROM large_table WHERE complex_condition = 'slow_query'
+2024-01-01 10:00:20 UTC ERROR: duplicate key value violates unique constraint "users_email_key"
+2024-01-01 10:00:25 UTC FATAL: password authentication failed for user "hacker"
+2024-01-01 10:00:30 UTC LOG: checkpoint starting: time
+2024-01-01 10:00:35 UTC WARNING: could not receive data from client: Connection reset by peer
+2024-01-01 10:00:40 UTC LOG: checkpoint complete: wrote 256 buffers (1.6%); 0 WAL file(s) added, 0 removed, 1 recycled`
+
+  // Также загружаем пример server_info
+  serverInfoText.value = JSON.stringify({
+    version: "15.2",
+    host: "localhost",
+    port: "5432"
+  }, null, 2)
 }
 
 const handleFileUpload = async (event: Event) => {
@@ -191,7 +172,23 @@ const analyzeLogs = async () => {
   results.value = null
 
   try {
-    results.value = await api.analyzeLogs(form.value)
+    // Парсим server_info из текста или используем пустой объект
+    let server_info: any = {}
+    if (serverInfoText.value.trim()) {
+      try {
+        server_info = JSON.parse(serverInfoText.value)
+      } catch {
+        throw new Error('Некорректный JSON в поле информации о сервере')
+      }
+    }
+
+    const request: LogsAnalyzeRequest = {
+      logs: form.value.logs,
+      server_info,
+      environment: environment.value
+    }
+
+    results.value = await analysisStore.analyzeLogs(request)
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Произошла ошибка при анализе логов'
   } finally {

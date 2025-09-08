@@ -34,10 +34,6 @@
           <div class="text-sm font-semibold text-blue-700">
             {{ connectionsStats.active }} активных
           </div>
-          <div class="flex items-center text-green-600">
-            <div class="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
-            <span class="text-xs font-medium">Онлайн</span>
-          </div>
         </div>
       </div>
 
@@ -57,10 +53,6 @@
         <div class="flex items-center justify-between">
           <div class="text-sm font-semibold text-purple-700">
             {{ tasksStats.active }} активных
-          </div>
-          <div class="flex items-center text-green-600">
-            <div class="w-2 h-2 bg-green-500 rounded-full mr-2 animate-pulse"></div>
-            <span class="text-xs font-medium">Запланировано</span>
           </div>
         </div>
       </div>
@@ -232,9 +224,6 @@
               <div class="flex-1 min-w-0">
                 <div class="text-sm font-semibold text-gray-900 truncate">
                   {{ connection.name }}
-                </div>
-                <div class="text-xs text-gray-500 font-mono">
-                  {{ connection.host }}:{{ connection.port }}
                 </div>
               </div>
               <button

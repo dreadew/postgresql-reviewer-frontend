@@ -189,10 +189,14 @@ const onSubmit = async () => {
   
   try {
     if (isEditing.value && props.rule) {
-      // Update existing rule
-      await rulesStore.updateRule(props.rule.category, props.rule.filename, form)
+      // Update existing rule - передаём только title и content
+      const updateData = {
+        title: form.title,
+        content: form.content
+      }
+      await rulesStore.updateRule(props.rule.category, props.rule.filename, updateData)
     } else {
-      // Create new rule
+      // Create new rule - передаём все поля
       await rulesStore.createRule(form)
     }
     

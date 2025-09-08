@@ -90,13 +90,6 @@
                 Просмотр
               </button>
               <button
-                @click="testConnection(connection.id)"
-                class="btn btn-secondary btn-sm"
-                :disabled="testingConnection === connection.id"
-              >
-                {{ testingConnection === connection.id ? 'Тест...' : 'Тест' }}
-              </button>
-              <button
                 @click="editConnection(connection)"
                 class="btn btn-secondary btn-sm"
               >

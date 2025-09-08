@@ -73,61 +73,6 @@
                       </div>
                     </div>
                   </div>
-
-                  <!-- Connection Test Section -->
-                  <div class="border-t pt-6">
-                    <div class="flex items-center justify-between mb-4">
-                      <h4 class="text-md font-medium text-gray-900">Тест подключения</h4>
-                      <button
-                        @click="testConnection"
-                        :disabled="testing"
-                        class="btn btn-secondary btn-sm"
-                      >
-                        {{ testing ? 'Тестирование...' : 'Тестировать' }}
-                      </button>
-                    </div>
-                    
-                    <!-- Test Result -->
-                    <div v-if="testResult" class="mt-4">
-                      <div
-                        :class="[
-                          'p-3 rounded-md text-sm',
-                          testResult.success
-                            ? 'bg-green-50 text-green-800 border border-green-200'
-                            : 'bg-red-50 text-red-800 border border-red-200'
-                        ]"
-                      >
-                        <div class="flex items-center">
-                          <div class="flex-shrink-0">
-                            <svg
-                              v-if="testResult.success"
-                              class="h-5 w-5 text-green-400"
-                              viewBox="0 0 20 20"
-                              fill="currentColor"
-                            >
-                              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
-                            </svg>
-                            <svg
-                              v-else
-                              class="h-5 w-5 text-red-400"
-                              viewBox="0 0 20 20"
-                              fill="currentColor"
-                            >
-                              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
-                            </svg>
-                          </div>
-                          <div class="ml-3">
-                            <p class="font-medium">
-                              {{ testResult.success ? 'Подключение успешно!' : 'Ошибка подключения' }}
-                            </p>
-                            <p v-if="testResult.message" class="mt-1">
-                              {{ testResult.message }}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
                 </div>
               </div>
             </div>

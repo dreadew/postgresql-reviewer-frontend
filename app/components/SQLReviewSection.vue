@@ -26,71 +26,38 @@ ORDER BY order_count DESC"
           ></textarea>
         </div>
 
-        <!-- Environment and Thread ID -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label for="sql-environment" class="block text-sm font-medium text-gray-700 mb-2">Среда</label>
-            <select 
-              id="sql-environment"
-              v-model="form.environment" 
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-              <option value="development">Development</option>
-              <option value="staging">Staging</option>
-              <option value="production">Production</option>
-              <option value="testing">Testing</option>
-            </select>
-          </div>
-          <div>
-            <label for="thread-id" class="block text-sm font-medium text-gray-700 mb-2">Thread ID (опционально)</label>
-            <input 
-              id="thread-id"
-              v-model="form.thread_id"
-              type="text" 
-              placeholder="thread_123"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-          </div>
+        <!-- Environment -->
+        <div>
+          <label for="sql-environment" class="block text-sm font-medium text-gray-700 mb-2">Среда</label>
+          <select 
+            id="sql-environment"
+            v-model="environment" 
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          >
+            <option value="dev">Development</option>
+            <option value="test">Testing</option>
+            <option value="stage">Staging</option>
+            <option value="prod">Production</option>
+          </select>
         </div>
 
-        <!-- Server Info -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div>
-            <label for="sql-version" class="block text-sm font-medium text-gray-700 mb-2">Версия PostgreSQL</label>
-            <input 
-              id="sql-version"
-              v-model="form.server_info.version"
-              type="text" 
-              placeholder="15.4"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-          </div>
-          <div>
-            <label for="sql-host" class="block text-sm font-medium text-gray-700 mb-2">Хост</label>
-            <input 
-              id="sql-host"
-              v-model="form.server_info.host"
-              type="text" 
-              placeholder="localhost"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-          </div>
-          <div>
-            <label for="sql-database" class="block text-sm font-medium text-gray-700 mb-2">База данных</label>
-            <input 
-              id="sql-database"
-              v-model="form.server_info.database"
-              type="text" 
-              placeholder="myapp"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            >
-          </div>
+        <!-- Query Plan -->
+        <div>
+          <label for="query-plan" class="block text-sm font-medium text-gray-700 mb-2">План выполнения (EXPLAIN, опционально)</label>
+          <textarea 
+            id="query-plan"
+            v-model="queryPlanText"
+            rows="6"
+            placeholder='{"Plan": {"Node Type": "Sort", "Sort Key": ["order_count"], "Total Cost": 1234.56}}'
+            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-xs"
+          ></textarea>
+          <p class="text-xs text-gray-500 mt-1">Формат: JSON результат команды EXPLAIN (FORMAT JSON)</p>
         </div>
 
         <!-- Tables Information -->
         <div>
           <div class="flex items-center justify-between mb-3">
-            <div class="block text-sm font-medium text-gray-700">Информация о таблицах (опционально)</div>
+            <label class="block text-sm font-medium text-gray-700">Информация о таблицах (опционально)</label>
             <button 
               type="button"
               @click="addTable"
@@ -105,94 +72,55 @@ ORDER BY order_count DESC"
               :key="index"
               class="grid grid-cols-1 md:grid-cols-5 gap-3 p-3 border border-gray-200 rounded-lg"
             >
-              <div>
-                <input 
-                  v-model="table.name"
-                  type="text" 
-                  placeholder="Имя таблицы"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                >
-              </div>
-              <div>
-                <input 
-                  v-model="table.schema"
-                  type="text" 
-                  placeholder="Схема"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                >
-              </div>
-              <div>
-                <input 
-                  v-model.number="table.row_count"
-                  type="number" 
-                  placeholder="Кол-во строк"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                >
-              </div>
-              <div>
-                <input 
-                  :value="table.indexes.join(', ')"
-                  type="text" 
-                  placeholder="Индексы (через запятую)"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
-                  @input="updateTableIndexes(index, ($event.target as HTMLInputElement)?.value || '')"
-                >
-              </div>
-              <div>
-                <button 
-                  type="button"
-                  @click="removeTable(index)"
-                  class="w-full p-2 text-red-500 hover:bg-red-50 rounded-lg"
-                >
-                  <svg class="w-5 h-5 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                  </svg>
-                </button>
-              </div>
+              <input 
+                v-model="table.name"
+                placeholder="Имя таблицы" 
+                class="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              >
+              <input 
+                v-model="table.schema"
+                placeholder="Схема" 
+                class="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              >
+              <input 
+                v-model.number="table.row_count"
+                placeholder="Кол-во строк" 
+                type="number"
+                class="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              >
+              <input 
+                v-model="table.indexes"
+                placeholder="Индексы (через запятую)" 
+                class="px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              >
+              <button 
+                type="button"
+                @click="removeTable(index)"
+                class="px-3 py-2 text-sm bg-red-600 text-white rounded-lg hover:bg-red-700"
+              >
+                Удалить
+              </button>
             </div>
           </div>
         </div>
 
-        <!-- Query Plan -->
-        <div>
-          <label for="query-plan" class="block text-sm font-medium text-gray-700 mb-2">План выполнения (JSON, опционально)</label>
-          <textarea 
-            id="query-plan"
-            v-model="queryPlanText"
-            rows="4"
-            placeholder='{"Plan": {"Node Type": "Sort", "Sort Key": ["order_count"], "Total Cost": 1234.56}}'
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm"
-          ></textarea>
-        </div>
-
-        <!-- Submit Button -->
+        <!-- Submit -->
         <div class="flex justify-end">
-          <button 
+          <button
             type="submit"
-            :disabled="loading || !canReview"
-            class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+            :disabled="!canReview || loading"
+            class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50"
           >
-            <svg v-if="loading" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <span>{{ loading ? 'Анализируем...' : 'Анализировать запрос' }}</span>
+            {{ loading ? 'Анализируем...' : '🔍 Проанализировать SQL' }}
           </button>
         </div>
       </form>
-    </div>
 
-    <!-- Results -->
-    <div v-if="results" class="border-t border-gray-200">
-      <SQLReviewResults :results="results" />
-    </div>
-
-    <!-- Error State -->
-    <div v-if="error" class="border-t border-gray-200 p-6">
-      <div class="bg-red-50 border border-red-200 rounded-lg p-4">
-        <div class="flex">
-          <svg class="w-5 h-5 text-red-500 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+      <!-- Error -->
+      <div v-if="error" class="mt-6 bg-red-50 border border-red-200 rounded-lg p-4">
+        <div class="flex items-start">
+          <svg class="w-5 h-5 text-red-400 mt-0.5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
           </svg>
           <div>
             <h4 class="text-red-800 font-medium">Ошибка анализа</h4>
@@ -200,53 +128,36 @@ ORDER BY order_count DESC"
           </div>
         </div>
       </div>
+
+      <!-- Results -->
+      <div v-if="results" class="mt-6">
+        <SQLReviewResults :results="results" />
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
-import type { SQLReviewRequest, SQLReviewResult, Environment } from '~/types/api'
+import { ref, computed } from 'vue'
+import type { ReviewRequest, ReviewResponse } from '~/types/api'
 
-const api = useApi()
+const analysisStore = useAnalysisStore()
 
 const loading = ref(false)
 const error = ref<string | null>(null)
-const results = ref<SQLReviewResult | null>(null)
+const results = ref<ReviewResponse | null>(null)
 const queryPlanText = ref('')
+const environment = ref<'dev' | 'test' | 'stage' | 'prod'>('prod')
 
-const form = ref<SQLReviewRequest>({
+const form = ref<ReviewRequest>({
   sql: '',
-  environment: 'production' as Environment,
-  server_info: {
-    version: '15.4',
-    host: 'localhost',
-    database: 'myapp'
-  },
+  query_plan: undefined,
   tables: [],
-  thread_id: '',
-  query_plan: undefined
+  database_stats: undefined
 })
 
 const canReview = computed(() => {
-  return form.value.sql.trim().length > 0 && 
-         form.value.server_info.version && 
-         form.value.server_info.host && 
-         form.value.server_info.database
-})
-
-// Watch for query plan text changes and parse JSON
-watch(queryPlanText, (newValue) => {
-  if (newValue.trim()) {
-    try {
-      form.value.query_plan = JSON.parse(newValue)
-    } catch {
-      // Invalid JSON, set to undefined
-      form.value.query_plan = undefined
-    }
-  } else {
-    form.value.query_plan = undefined
-  }
+  return form.value.sql.trim().length > 0
 })
 
 const addTable = () => {
@@ -267,12 +178,6 @@ const removeTable = (index: number) => {
   }
 }
 
-const updateTableIndexes = (index: number, value: string) => {
-  if (form.value.tables && form.value.tables[index]) {
-    form.value.tables[index].indexes = value.split(',').map(s => s.trim()).filter(s => s.length > 0)
-  }
-}
-
 const reviewSQL = async () => {
   if (!canReview.value) return
   
@@ -281,16 +186,34 @@ const reviewSQL = async () => {
   results.value = null
 
   try {
-    // Clean up form data
-    const requestData = { ...form.value }
-    if (!requestData.thread_id) {
-      delete requestData.thread_id
-    }
-    if (!requestData.tables || requestData.tables.length === 0) {
-      delete requestData.tables
+    // Подготавливаем данные для запроса
+    const requestData: ReviewRequest = {
+      sql: form.value.sql,
+      query_plan: form.value.query_plan,
+      tables: form.value.tables || [], // Всегда передаем массив, даже если пустой
+      database_stats: form.value.database_stats
     }
 
-    results.value = await api.reviewSQL(requestData)
+    // Парсим query_plan из текста если он есть
+    if (queryPlanText.value.trim()) {
+      try {
+        requestData.query_plan = JSON.parse(queryPlanText.value)
+      } catch {
+        // Игнорируем ошибки парсинга JSON
+        requestData.query_plan = undefined
+      }
+    }
+
+    // Обрабатываем индексы для таблиц
+    if (requestData.tables) {
+      requestData.tables.forEach(table => {
+        if (typeof table.indexes === 'string') {
+          table.indexes = (table.indexes as any).split(',').map((idx: string) => idx.trim()).filter((idx: string) => idx.length > 0)
+        }
+      })
+    }
+
+    results.value = await analysisStore.reviewSQL(requestData)
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Произошла ошибка при анализе SQL запроса'
   } finally {

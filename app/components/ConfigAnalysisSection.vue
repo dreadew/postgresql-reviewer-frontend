@@ -9,7 +9,7 @@
         </div>
         <button
           @click="startAnalysis"
-          :disabled="loading || !selectedConnection"
+          :disabled="loading"
           class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50"
         >
           {{ loading ? 'Анализируем...' : '🔍 Начать анализ' }}
@@ -19,29 +19,54 @@
 
     <!-- Analysis Form -->
     <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="grid grid-cols-1 gap-6">
+        <!-- Environment Selection -->
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Подключение</label>
-          <select v-model="selectedConnection" class="w-full px-3 py-2 border border-gray-300 rounded-md">
-            <option value="">Выберите подключение</option>
-            <option v-for="connection in connections" :key="connection.id" :value="connection.id">
-              {{ connection.name }}
-            </option>
-          </select>
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Окружение</label>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Окружение</label>
           <select v-model="environment" class="w-full px-3 py-2 border border-gray-300 rounded-md">
             <option value="development">Development</option>
             <option value="staging">Staging</option>
             <option value="production">Production</option>
+            <option value="testing">Testing</option>
           </select>
         </div>
-        <div class="flex items-end">
-          <label class="flex items-center">
-            <input v-model="detailedAnalysis" type="checkbox" class="mr-2">
-            <span class="text-sm text-gray-700">Детальный анализ</span>
-          </label>
+
+        <!-- Config Input -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Конфигурация PostgreSQL</label>
+          <textarea
+            v-model="configText"
+            class="w-full h-48 px-3 py-2 border border-gray-300 rounded-md font-mono text-sm"
+            placeholder="Вставьте настройки PostgreSQL в формате JSON:
+{
+  &quot;shared_buffers&quot;: &quot;128MB&quot;,
+  &quot;effective_cache_size&quot;: &quot;4GB&quot;,
+  &quot;maintenance_work_mem&quot;: &quot;64MB&quot;,
+  &quot;checkpoint_completion_target&quot;: &quot;0.7&quot;,
+  &quot;wal_buffers&quot;: &quot;16MB&quot;,
+  &quot;default_statistics_target&quot;: &quot;100&quot;,
+  &quot;random_page_cost&quot;: &quot;4&quot;,
+  &quot;effective_io_concurrency&quot;: &quot;1&quot;,
+  &quot;work_mem&quot;: &quot;4MB&quot;
+}"
+          ></textarea>
+          <p class="text-xs text-gray-500 mt-1">Формат: JSON объект с параметрами конфигурации PostgreSQL</p>
+        </div>
+
+        <!-- Server Info Input -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Информация о сервере</label>
+          <textarea
+            v-model="serverInfoText"
+            class="w-full h-24 px-3 py-2 border border-gray-300 rounded-md font-mono text-sm"
+            placeholder="Информация о сервере в формате JSON:
+{
+  &quot;version&quot;: &quot;15.4&quot;,
+  &quot;host&quot;: &quot;prod-db.example.com&quot;,
+  &quot;database&quot;: &quot;myapp&quot;
+}"
+          ></textarea>
+          <p class="text-xs text-gray-500 mt-1">Формат: JSON объект с информацией о сервере</p>
         </div>
       </div>
     </div>
@@ -74,18 +99,22 @@
         <!-- Summary -->
         <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6">
           <h4 class="text-lg font-medium text-gray-900 mb-4">Сводка анализа</h4>
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
             <div class="text-center">
-              <div class="text-2xl font-bold text-green-600">{{ results.summary?.total_issues || 0 }}</div>
-              <div class="text-sm text-gray-600">Найдено проблем</div>
+              <div class="text-2xl font-bold text-blue-600">{{ results.overall_score }}</div>
+              <div class="text-sm text-gray-600">Общая оценка</div>
             </div>
             <div class="text-center">
-              <div class="text-2xl font-bold text-yellow-600">{{ results.summary?.critical_issues || 0 }}</div>
-              <div class="text-sm text-gray-600">Критических</div>
+              <div class="text-2xl font-bold text-green-600">{{ results.performance_score }}</div>
+              <div class="text-sm text-gray-600">Производительность</div>
             </div>
             <div class="text-center">
-              <div class="text-2xl font-bold text-blue-600">{{ results.recommendations?.length || 0 }}</div>
-              <div class="text-sm text-gray-600">Рекомендаций</div>
+              <div class="text-2xl font-bold text-yellow-600">{{ results.security_score }}</div>
+              <div class="text-sm text-gray-600">Безопасность</div>
+            </div>
+            <div class="text-center">
+              <div class="text-2xl font-bold text-purple-600">{{ results.maintenance_score }}</div>
+              <div class="text-sm text-gray-600">Обслуживание</div>
             </div>
           </div>
         </div>
@@ -106,13 +135,12 @@
                     <span :class="severityClass(issue.severity)" class="px-2 py-1 text-xs font-medium rounded-full">
                       {{ issue.severity }}
                     </span>
+                    <span class="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
+                      {{ issue.category }}
+                    </span>
                   </div>
                   <p class="text-gray-700 mb-2">{{ issue.description }}</p>
-                  <div class="text-sm text-gray-600">
-                    <span class="font-medium">Текущее значение:</span> {{ issue.current_value }}
-                    <br>
-                    <span class="font-medium">Рекомендуется:</span> {{ issue.recommended_value }}
-                  </div>
+                  <p class="text-sm text-blue-700">{{ issue.recommendation }}</p>
                 </div>
               </div>
             </div>
@@ -125,11 +153,24 @@
           <div class="space-y-3">
             <div 
               v-for="recommendation in results.recommendations" 
-              :key="recommendation.category"
+              :key="recommendation.parameter"
               class="bg-blue-50 border border-blue-200 rounded-lg p-4"
             >
-              <h5 class="font-medium text-blue-900 mb-2">{{ recommendation.category }}</h5>
-              <p class="text-blue-800">{{ recommendation.description }}</p>
+              <div class="flex items-center space-x-2 mb-2">
+                <h5 class="font-medium text-blue-900">{{ recommendation.parameter }}</h5>
+                <span :class="severityClass(recommendation.impact)" class="px-2 py-1 text-xs font-medium rounded-full">
+                  {{ recommendation.impact }}
+                </span>
+                <span class="px-2 py-1 text-xs font-medium bg-blue-100 text-blue-800 rounded-full">
+                  {{ recommendation.category }}
+                </span>
+              </div>
+              <p class="text-blue-800 mb-2">{{ recommendation.description }}</p>
+              <div class="text-sm text-blue-700">
+                <span class="font-medium">Текущее значение:</span> {{ recommendation.current_value }}
+                <br>
+                <span class="font-medium">Рекомендуется:</span> {{ recommendation.recommended_value }}
+              </div>
             </div>
           </div>
         </div>
@@ -147,44 +188,51 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import type { ConfigAnalysisRequest, ConfigAnalysisResult } from '~/types/api'
+import { ref } from 'vue'
+import type { ConfigAnalyzeRequest, ConfigAnalyzeResponse } from '~/types/api'
 
-const api = useApi()
-const connectionsStore = useConnectionsStore()
+const analysisStore = useAnalysisStore()
 
 const loading = ref(false)
 const error = ref<string | null>(null)
-const results = ref<ConfigAnalysisResult | null>(null)
-const selectedConnection = ref<number | ''>('')
-const environment = ref<'development' | 'staging' | 'production'>('production')
-const detailedAnalysis = ref(false)
-
-const connections = computed(() => connectionsStore.connections)
-
-onMounted(async () => {
-  await connectionsStore.fetchConnections()
-})
+const results = ref<ConfigAnalyzeResponse | null>(null)
+const environment = ref<'development' | 'staging' | 'production' | 'testing'>('production')
+const configText = ref('')
+const serverInfoText = ref('')
 
 const startAnalysis = async () => {
-  if (!selectedConnection.value) {
-    error.value = 'Выберите подключение для анализа'
-    return
-  }
-
   loading.value = true
   error.value = null
   results.value = null
 
   try {
-    const request: ConfigAnalysisRequest = {
-      connection_id: selectedConnection.value as number,
-      environment: environment.value,
-      detailed_analysis: detailedAnalysis.value,
-      analysis_target: 'all'
+    // Парсим конфигурацию или используем пустой объект
+    let config = {}
+    if (configText.value.trim()) {
+      try {
+        config = JSON.parse(configText.value)
+      } catch {
+        throw new Error('Некорректный JSON в поле конфигурации')
+      }
     }
 
-    results.value = await api.analyzeConfig(request)
+    // Парсим server_info или используем пустой объект
+    let server_info: any = {}
+    if (serverInfoText.value.trim()) {
+      try {
+        server_info = JSON.parse(serverInfoText.value)
+      } catch {
+        throw new Error('Некорректный JSON в поле информации о сервере')
+      }
+    }
+
+    const request: ConfigAnalyzeRequest = {
+      config,
+      server_info,
+      environment: environment.value
+    }
+
+    results.value = await analysisStore.analyzeConfig(request)
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Произошла ошибка при анализе'
   } finally {
@@ -195,8 +243,11 @@ const startAnalysis = async () => {
 const severityClass = (severity: string): string => {
   const classes: Record<string, string> = {
     critical: 'bg-red-100 text-red-800',
+    high: 'bg-red-100 text-red-800',
     warning: 'bg-yellow-100 text-yellow-800',
-    info: 'bg-blue-100 text-blue-800'
+    medium: 'bg-yellow-100 text-yellow-800',
+    info: 'bg-blue-100 text-blue-800',
+    low: 'bg-blue-100 text-blue-800'
   }
   return classes[severity] || 'bg-gray-100 text-gray-800'
 }
