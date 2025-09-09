@@ -489,28 +489,6 @@ const loadExecutions = async (showLoading = false) => {
       console.warn('getTaskExecutions API error, falling back to test data', e)
     }
 
-    if (!data || data.length === 0) {
-      // Generate test data if API returns empty or errored
-  // Using generated test data for executions
-      const testData: TaskExecution[] = [] as any
-      const statuses = ['completed', 'running', 'failed', 'pending']
-      const taskTypes = ['log_analysis', 'config_check', 'query_analysis', 'custom_sql']
-
-      for (let i = 0; i < 15; i++) {
-        testData.push({
-          id: i + 1,
-          task_id: Math.floor(i / 3) + 1,
-          status: statuses[i % statuses.length] as any,
-          task_type: taskTypes[i % taskTypes.length],
-          started_at: new Date(Date.now() - Math.random() * 86400000).toISOString(),
-          completed_at: Math.random() > 0.3 ? new Date(Date.now() - Math.random() * 3600000).toISOString() : undefined,
-          result: undefined,
-          error_message: undefined
-        } as any)
-      }
-      data = testData
-    }
-
     // Store all data for client-side filtering
     allExecutions.value = data
     // If current page is out-of-range after reload, clamp it
