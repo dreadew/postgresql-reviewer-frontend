@@ -1,5 +1,3 @@
-# Multi-stage Dockerfile for PostgreSQL Reviewer Frontend
-
 # Stage 1: Dependencies
 FROM node:20-alpine AS deps
 WORKDIR /app
@@ -8,21 +6,17 @@ WORKDIR /app
 RUN apk add --no-cache dumb-init
 
 # Copy package files
-COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* ./
+COPY package.json yarn.lock ./
 
-# Install dependencies based on available lock file
-RUN \
-    if [ -f yarn.lock ]; then yarn install --frozen-lockfile; \
-    elif [ -f package-lock.json ]; then npm ci; \
-    elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm i; \
-    else echo "Lockfile not found." && exit 1; \
-    fi
+# Install dependencies
+RUN yarn install --frozen-lockfile
 
 # Stage 2: Build
 FROM node:20-alpine AS builder
 WORKDIR /app
 
-# Copy dependencies from deps stage
+# Copy package files and dependencies
+COPY package.json yarn.lock ./
 COPY --from=deps /app/node_modules ./node_modules
 
 # Copy source code
@@ -33,31 +27,27 @@ ENV NODE_ENV=production
 ENV NITRO_PRESET=node-server
 
 # Build the application
-RUN \
-    if [ -f yarn.lock ]; then yarn build; \
-    elif [ -f package-lock.json ]; then npm run build; \
-    elif [ -f pnpm-lock.yaml ]; then corepack enable pnpm && pnpm build; \
-    else npm run build; \
-    fi
+RUN yarn build
 
 # Stage 3: Runtime
 FROM node:20-alpine AS runtime
 WORKDIR /app
 
-# Install dumb-init and create user in single layer
+# Install dumb-init and create user
 RUN apk add --no-cache dumb-init && \
     addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nuxtjs
 
 # Copy built application
 COPY --from=builder --chown=nuxtjs:nodejs /app/.output ./
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/healthcheck.js ./healthcheck.js
 
 # Set environment variables
 ENV NODE_ENV=production
 ENV NUXT_HOST=0.0.0.0
 ENV NUXT_PORT=3000
 
-# Expose port
 EXPOSE 3000
 
 # Switch to non-root user

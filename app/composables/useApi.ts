@@ -320,9 +320,7 @@ class ApiClient {
 }
 
 const apiClient = new ApiClient(
-  process.env.NODE_ENV === 'production' 
-    ? 'https://api.postgresql-reviewer.com/api/v1' 
-    : 'http://localhost:8000/api/v1'
+  process.env.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:8000/api/v1'
 )
 
 export const useApi = () => apiClient
