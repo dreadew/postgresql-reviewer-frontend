@@ -85,13 +85,21 @@
                   <div class="border-t pt-6">
                     <div class="flex items-center justify-between mb-4">
                       <h4 class="text-md font-medium text-gray-900">Управление задачей</h4>
-                      <button
-                        @click="runTask"
-                        :disabled="running"
-                        class="btn btn-primary btn-sm"
-                      >
-                        {{ running ? 'Запуск...' : 'Запустить задачу' }}
-                      </button>
+                        <div class="flex items-center space-x-2">
+                          <button
+                            @click="runTask"
+                            :disabled="running"
+                            class="btn btn-primary btn-sm"
+                          >
+                            {{ running ? 'Запуск...' : 'Запустить задачу' }}
+                          </button>
+                          <button
+                            @click="openExecutions"
+                            class="btn btn-secondary btn-sm"
+                          >
+                            История запусков
+                          </button>
+                        </div>
                     </div>
                     
                     <!-- Run Result -->
@@ -160,10 +168,12 @@
       </div>
     </div>
   </teleport>
+  <TaskExecutionsModal :isOpen="executionsOpen" :taskId="props.task?.id ?? null" @close="closeExecutions" />
 </template>
 
 <script setup lang="ts">
 import type { Task } from '~/types/api'
+import TaskExecutionsModal from '~/components/TaskExecutionsModal.vue'
 
 interface Props {
   isOpen: boolean
@@ -193,7 +203,12 @@ const runTask = async () => {
   
   try {
     const result = await tasksStore.runTask(props.task.id)
-    runResult.value = result
+    // API older shape: { message: string }
+    if (result && typeof result === 'object' && 'success' in result) {
+      runResult.value = result as { success: boolean; message?: string }
+    } else {
+      runResult.value = { success: true, message: (result && (result as any).message) || 'Запущено' }
+    }
   } catch (error) {
     console.error('Task run error:', error)
     runResult.value = {
@@ -226,6 +241,13 @@ watch(() => props.isOpen, (isOpen) => {
     runResult.value = null
   }
 })
+
+// Executions modal state
+const executionsOpen = ref(false)
+const openExecutions = () => {
+  executionsOpen.value = true
+}
+const closeExecutions = () => { executionsOpen.value = false }
 </script>
 
 <style scoped>

@@ -25,6 +25,7 @@
             <option value="">Все</option>
             <option value="config">Конфигурация</option>
             <option value="sql">SQL запросы</option>
+            <option value="logs">Анализ логов</option>
           </select>
         </div>
       </div>
@@ -95,7 +96,7 @@
               <span
                 :class="[
                   'status-badge',
-                  rule.category === 'config' ? 'bg-blue-100 text-blue-800' : 'bg-purple-100 text-purple-800'
+                  rule.category === 'config' ? 'bg-blue-100 text-blue-800' : (rule.category === 'sql' ? 'bg-purple-100 text-purple-800' : 'bg-orange-100 text-orange-800')
                 ]"
               >
                 {{ getCategoryLabel(rule.category) }}
@@ -227,7 +228,8 @@ const deleteRule = async (rule: Rule) => {
 const getCategoryLabel = (category: string): string => {
   const labels: Record<string, string> = {
     'config': 'Конфигурация',
-    'sql': 'SQL запросы'
+  'sql': 'SQL запросы',
+  'logs': 'Анализ логов'
   }
   return labels[category] || category
 }

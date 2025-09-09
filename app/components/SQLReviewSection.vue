@@ -31,14 +31,31 @@ ORDER BY order_count DESC"
           <label for="sql-environment" class="block text-sm font-medium text-gray-700 mb-2">Среда</label>
           <select 
             id="sql-environment"
-            v-model="environment" 
+            v-model="form.environment" 
             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           >
-            <option value="dev">Development</option>
-            <option value="test">Testing</option>
-            <option value="stage">Staging</option>
-            <option value="prod">Production</option>
+            <option value="development">Development</option>
+            <option value="testing">Testing</option>
+            <option value="staging">Staging</option>
+            <option value="production">Production</option>
           </select>
+        </div>
+
+        <!-- Server Info -->
+        <div>
+          <label for="server-info" class="block text-sm font-medium text-gray-700 mb-2">Информация о сервере (опционально)</label>
+          <textarea
+            id="server-info"
+            v-model="serverInfoText"
+            class="w-full h-24 px-3 py-2 border border-gray-300 rounded-lg font-mono text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="Информация о сервере в формате JSON:
+{
+  &quot;version&quot;: &quot;15.4&quot;,
+  &quot;host&quot;: &quot;prod-db.example.com&quot;,
+  &quot;database&quot;: &quot;myapp&quot;
+}"
+          ></textarea>
+          <p class="text-xs text-gray-500 mt-1">Формат: JSON объект с информацией о сервере</p>
         </div>
 
         <!-- Query Plan -->
@@ -57,7 +74,7 @@ ORDER BY order_count DESC"
         <!-- Tables Information -->
         <div>
           <div class="flex items-center justify-between mb-3">
-            <label class="block text-sm font-medium text-gray-700">Информация о таблицах (опционально)</label>
+            <div class="block text-sm font-medium text-gray-700">Информация о таблицах (опционально)</div>
             <button 
               type="button"
               @click="addTable"
@@ -111,7 +128,7 @@ ORDER BY order_count DESC"
             :disabled="!canReview || loading"
             class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50"
           >
-            {{ loading ? 'Анализируем...' : '🔍 Проанализировать SQL' }}
+            {{ loading ? 'Анализируем...' : 'Проанализировать SQL' }}
           </button>
         </div>
       </form>
@@ -139,21 +156,21 @@ ORDER BY order_count DESC"
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import type { ReviewRequest, ReviewResponse } from '~/types/api'
+import type { SQLReviewRequest, Environment } from '~/types/api'
 
 const analysisStore = useAnalysisStore()
 
 const loading = ref(false)
 const error = ref<string | null>(null)
-const results = ref<ReviewResponse | null>(null)
+const results = ref<any>(null)
 const queryPlanText = ref('')
-const environment = ref<'dev' | 'test' | 'stage' | 'prod'>('prod')
+const serverInfoText = ref('')
 
-const form = ref<ReviewRequest>({
+const form = ref<SQLReviewRequest>({
   sql: '',
   query_plan: undefined,
   tables: [],
-  database_stats: undefined
+  environment: 'production' as Environment
 })
 
 const canReview = computed(() => {
@@ -186,12 +203,22 @@ const reviewSQL = async () => {
   results.value = null
 
   try {
-    // Подготавливаем данные для запроса
-    const requestData: ReviewRequest = {
+    // Преобразуем SQLReviewRequest в ReviewRequest для совместимости
+    const requestData: any = {
       sql: form.value.sql,
       query_plan: form.value.query_plan,
-      tables: form.value.tables || [], // Всегда передаем массив, даже если пустой
-      database_stats: form.value.database_stats
+      tables: form.value.tables || [],
+      environment: form.value.environment
+    }
+
+    // Парсим server_info из JSON текста если он есть
+    if (serverInfoText.value.trim()) {
+      try {
+        requestData.server_info = JSON.parse(serverInfoText.value)
+      } catch {
+        // Игнорируем ошибки парсинга JSON
+        requestData.server_info = undefined
+      }
     }
 
     // Парсим query_plan из текста если он есть
@@ -206,14 +233,14 @@ const reviewSQL = async () => {
 
     // Обрабатываем индексы для таблиц
     if (requestData.tables) {
-      requestData.tables.forEach(table => {
+      requestData.tables.forEach((table: any) => {
         if (typeof table.indexes === 'string') {
           table.indexes = (table.indexes as any).split(',').map((idx: string) => idx.trim()).filter((idx: string) => idx.length > 0)
         }
       })
     }
 
-    results.value = await analysisStore.reviewSQL(requestData)
+    results.value = await analysisStore.reviewSQL(requestData) as any
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Произошла ошибка при анализе SQL запроса'
   } finally {

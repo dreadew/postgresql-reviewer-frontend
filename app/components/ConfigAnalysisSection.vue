@@ -12,7 +12,7 @@
           :disabled="loading"
           class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50"
         >
-          {{ loading ? 'Анализируем...' : '🔍 Начать анализ' }}
+          {{ loading ? 'Анализируем...' : 'Начать анализ' }}
         </button>
       </div>
     </div>
@@ -96,51 +96,41 @@
       </div>
 
       <div v-else-if="results" class="space-y-6">
-        <!-- Summary -->
-        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6">
-          <h4 class="text-lg font-medium text-gray-900 mb-4">Сводка анализа</h4>
-          <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div class="text-center">
-              <div class="text-2xl font-bold text-blue-600">{{ results.overall_score }}</div>
-              <div class="text-sm text-gray-600">Общая оценка</div>
-            </div>
-            <div class="text-center">
-              <div class="text-2xl font-bold text-green-600">{{ results.performance_score }}</div>
-              <div class="text-sm text-gray-600">Производительность</div>
-            </div>
-            <div class="text-center">
-              <div class="text-2xl font-bold text-yellow-600">{{ results.security_score }}</div>
-              <div class="text-sm text-gray-600">Безопасность</div>
-            </div>
-            <div class="text-center">
-              <div class="text-2xl font-bold text-purple-600">{{ results.maintenance_score }}</div>
-              <div class="text-sm text-gray-600">Обслуживание</div>
+        <div class="flex items-center gap-6 flex-wrap w-full">
+          <!-- Summary -->
+          <div class="h-full bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg p-6 w-max">
+            <h4 class="text-lg font-medium text-gray-900 mb-4">Сводка анализа</h4>
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div class="text-center">
+                <div class="text-2xl font-bold text-blue-600">{{ results.overall_score }}</div>
+                <div class="text-sm text-gray-600">Общая оценка</div>
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- Issues -->
-        <div v-if="results.issues && results.issues.length > 0">
-          <h4 class="text-lg font-medium text-gray-900 mb-4">Найденные проблемы</h4>
-          <div class="space-y-3">
-            <div 
-              v-for="issue in results.issues" 
-              :key="issue.parameter"
-              class="border border-gray-200 rounded-lg p-4"
-            >
-              <div class="flex items-start justify-between">
-                <div class="flex-1">
-                  <div class="flex items-center space-x-2 mb-2">
-                    <h5 class="font-medium text-gray-900">{{ issue.parameter }}</h5>
-                    <span :class="severityClass(issue.severity)" class="px-2 py-1 text-xs font-medium rounded-full">
-                      {{ issue.severity }}
-                    </span>
-                    <span class="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
-                      {{ issue.category }}
-                    </span>
+          <!-- Issues -->
+          <div v-if="results.issues && results.issues.length > 0" class="flex-1">
+            <h4 class="text-lg font-medium text-gray-900 mb-4">Найденные проблемы</h4>
+            <div class="space-y-3">
+              <div 
+                v-for="issue in results.issues" 
+                :key="issue.parameter"
+                class="border border-gray-200 rounded-lg p-4"
+              >
+                <div class="flex items-start justify-between">
+                  <div class="flex-1">
+                    <div class="flex items-center space-x-2 mb-2">
+                      <h5 class="font-medium text-gray-900">{{ issue.parameter }}</h5>
+                      <span :class="severityClass(issue.severity)" class="px-2 py-1 text-xs font-medium rounded-full">
+                        {{ issue.severity }}
+                      </span>
+                      <span class="px-2 py-1 text-xs font-medium bg-gray-100 text-gray-800 rounded-full">
+                        {{ issue.category }}
+                      </span>
+                    </div>
+                    <p class="text-gray-700 mb-2">{{ issue.description }}</p>
+                    <p class="text-sm text-blue-700">{{ issue.recommendation }}</p>
                   </div>
-                  <p class="text-gray-700 mb-2">{{ issue.description }}</p>
-                  <p class="text-sm text-blue-700">{{ issue.recommendation }}</p>
                 </div>
               </div>
             </div>

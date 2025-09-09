@@ -262,7 +262,8 @@ const loadExecutions = async () => {
   
   loadingExecutions.value = true
   try {
-    executions.value = await api.getSchedulerExecutions(props.task.id)
+    // Ensure we pass the task id so the API call includes ?task_id={id}
+    executions.value = await api.getTaskExecutions(props.task.id)
   } catch (err) {
     console.error('Error loading executions:', err)
   } finally {

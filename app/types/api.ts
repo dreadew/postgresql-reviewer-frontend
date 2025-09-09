@@ -6,7 +6,7 @@ export type Impact = 'low' | 'medium' | 'high'
 export type Grade = 'A' | 'B' | 'C' | 'D' | 'F'
 export type TaskStatus = 'pending' | 'running' | 'success' | 'error' | 'completed' | 'failed'
 export type TaskType = 'log_analysis' | 'config_check' | 'query_analysis' | 'custom_sql' | 'table_analysis'
-export type RuleCategory = 'config' | 'sql'
+export type RuleCategory = 'config' | 'sql' | 'logs'
 export type AnalysisTarget = 'logs' | 'config' | 'performance' | 'security' | 'tables' | 'queries'
 export type LogLevel = 'debug' | 'info' | 'warning' | 'error'
 export type LogSource = 'application' | 'postgresql'
@@ -176,6 +176,7 @@ export interface CreateScheduledTaskRequest {
 export interface TaskExecution {
   id: number
   task_id: number
+  task_type: string
   status: TaskStatus
   started_at: string
   completed_at?: string

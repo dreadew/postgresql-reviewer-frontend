@@ -94,25 +94,25 @@
                 :disabled="executingTasks.has(task.id)"
                 class="px-3 py-1 bg-green-100 text-green-700 rounded-md hover:bg-green-200 transition-colors text-sm font-medium disabled:opacity-50"
               >
-                {{ executingTasks.has(task.id) ? 'Выполняется...' : '▶ Запустить' }}
+                {{ executingTasks.has(task.id) ? 'Выполняется...' : '▶' }}
               </button>
               <button
                 @click="viewTask(task)"
                 class="px-3 py-1 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 transition-colors text-sm font-medium"
               >
-                👁 Просмотр
+                👁
               </button>
               <button
                 @click="editTask(task)"
                 class="px-3 py-1 bg-yellow-100 text-yellow-700 rounded-md hover:bg-yellow-200 transition-colors text-sm font-medium"
               >
-                ✏ Редактировать
+                ✏
               </button>
               <button
                 @click="deleteTask(task.id)"
                 class="px-3 py-1 bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition-colors text-sm font-medium"
               >
-                🗑 Удалить
+                🗑
               </button>
             </div>
           </div>
@@ -260,9 +260,8 @@ const formatDate = (dateStr?: string): string => {
 const executeTask = async (taskId: number) => {
   executingTasks.value.add(taskId)
   try {
-    const result = await api.executeSchedulerTask(taskId)
-    // Show success message
-    console.log(`Задача запущена! ID выполнения: ${result.execution_id}`)
+  await api.executeSchedulerTask(taskId)
+  // Execution triggered; execution id available from API response if needed
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Ошибка при выполнении задачи'
   } finally {

@@ -28,23 +28,23 @@
     <!-- Summary Stats -->
     <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
       <div class="bg-white border border-gray-200 rounded-lg p-4 text-center">
-        <div class="text-2xl font-bold text-blue-600">{{ results.analysis_summary.total_log_lines }}</div>
+        <div class="text-2xl font-bold text-blue-600">{{ results.analysis_summary?.total_log_lines ?? 0 }}</div>
         <div class="text-sm text-gray-600">Строк логов</div>
       </div>
       <div class="bg-white border border-red-200 rounded-lg p-4 text-center">
-        <div class="text-2xl font-bold text-red-600">{{ results.analysis_summary.error_count }}</div>
+  <div class="text-2xl font-bold text-red-600">{{ results.analysis_summary?.error_count ?? 0 }}</div>
         <div class="text-sm text-gray-600">Ошибок</div>
       </div>
       <div class="bg-white border border-yellow-200 rounded-lg p-4 text-center">
-        <div class="text-2xl font-bold text-yellow-600">{{ results.analysis_summary.warning_count }}</div>
+  <div class="text-2xl font-bold text-yellow-600">{{ results.analysis_summary?.warning_count ?? 0 }}</div>
         <div class="text-sm text-gray-600">Предупреждений</div>
       </div>
       <div class="bg-white border border-orange-200 rounded-lg p-4 text-center">
-        <div class="text-2xl font-bold text-orange-600">{{ results.analysis_summary.slow_query_count }}</div>
+  <div class="text-2xl font-bold text-orange-600">{{ results.analysis_summary?.slow_query_count ?? 0 }}</div>
         <div class="text-sm text-gray-600">Медленных запросов</div>
       </div>
       <div class="bg-white border border-green-200 rounded-lg p-4 text-center">
-        <div class="text-2xl font-bold text-green-600">{{ results.analysis_summary.connection_events }}</div>
+  <div class="text-2xl font-bold text-green-600">{{ results.analysis_summary?.connection_events ?? 0 }}</div>
         <div class="text-sm text-gray-600">События подключений</div>
       </div>
     </div>
@@ -55,15 +55,15 @@
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
         <div>
           <span class="text-gray-600">Начало:</span>
-          <span class="ml-2 font-medium">{{ formatTimestamp(results.analysis_summary.time_range.start) }}</span>
+          <span class="ml-2 font-medium">{{ results.analysis_summary?.time_range?.start ? formatTimestamp(results.analysis_summary.time_range.start) : '-' }}</span>
         </div>
         <div>
           <span class="text-gray-600">Конец:</span>
-          <span class="ml-2 font-medium">{{ formatTimestamp(results.analysis_summary.time_range.end) }}</span>
+          <span class="ml-2 font-medium">{{ results.analysis_summary?.time_range?.end ? formatTimestamp(results.analysis_summary.time_range.end) : '-' }}</span>
         </div>
         <div>
           <span class="text-gray-600">Длительность:</span>
-          <span class="ml-2 font-medium">{{ results.analysis_summary.time_range.duration_minutes.toFixed(1) }} мин</span>
+          <span class="ml-2 font-medium">{{ results.analysis_summary?.time_range?.duration_minutes ? results.analysis_summary.time_range.duration_minutes.toFixed(1) + ' мин' : '-' }}</span>
         </div>
       </div>
     </div>
@@ -73,30 +73,30 @@
       <h5 class="text-lg font-semibold text-gray-900 mb-4">Распределение по категориям</h5>
       <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
         <div class="text-center">
-          <div class="text-3xl font-bold text-red-600">{{ results.analysis_summary.categories.errors }}</div>
+    <div class="text-3xl font-bold text-red-600">{{ results.analysis_summary?.categories?.errors ?? 0 }}</div>
           <div class="text-sm text-gray-600">Ошибки</div>
         </div>
         <div class="text-center">
-          <div class="text-3xl font-bold text-yellow-600">{{ results.analysis_summary.categories.warnings }}</div>
+          <div class="text-3xl font-bold text-yellow-600">{{ results.analysis_summary?.categories?.warnings ?? 0 }}</div>
           <div class="text-sm text-gray-600">Предупреждения</div>
         </div>
         <div class="text-center">
-          <div class="text-3xl font-bold text-orange-600">{{ results.analysis_summary.categories.performance }}</div>
+          <div class="text-3xl font-bold text-orange-600">{{ results.analysis_summary?.categories?.performance ?? 0 }}</div>
           <div class="text-sm text-gray-600">Производительность</div>
         </div>
         <div class="text-center">
-          <div class="text-3xl font-bold text-purple-600">{{ results.analysis_summary.categories.security }}</div>
+          <div class="text-3xl font-bold text-purple-600">{{ results.analysis_summary?.categories?.security ?? 0 }}</div>
           <div class="text-sm text-gray-600">Безопасность</div>
         </div>
         <div class="text-center">
-          <div class="text-3xl font-bold text-blue-600">{{ results.analysis_summary.categories.connections }}</div>
+          <div class="text-3xl font-bold text-blue-600">{{ results.analysis_summary?.categories?.connections ?? 0 }}</div>
           <div class="text-sm text-gray-600">Подключения</div>
         </div>
       </div>
     </div>
 
     <!-- Errors -->
-    <div v-if="results.errors.length > 0" class="space-y-4">
+  <div v-if="(results.errors || []).length > 0" class="space-y-4">
       <h5 class="text-lg font-semibold text-gray-900">Обнаруженные ошибки</h5>
       <div class="space-y-3">
         <div 
@@ -127,7 +127,7 @@
                 <p class="text-gray-600 mt-1">{{ error.message }}</p>
               </div>
               <div class="mt-3 text-sm text-gray-600">
-                <span class="font-medium">Время:</span> {{ formatTimestamp(error.timestamp) }}
+                <span class="font-medium">Время:</span> {{ error.timestamp ? formatTimestamp(error.timestamp) : '-' }}
               </div>
               <div v-if="error.query" class="mt-3 p-3 bg-gray-50 rounded-lg">
                 <div class="text-sm font-medium text-gray-700 mb-1">SQL запрос:</div>
@@ -144,11 +144,11 @@
     </div>
 
     <!-- Performance Issues -->
-    <div v-if="results.analysis_summary.performance_issues.length > 0" class="space-y-4">
+  <div v-if="(results.analysis_summary?.performance_issues || []).length > 0" class="space-y-4">
       <h5 class="text-lg font-semibold text-gray-900">Проблемы производительности</h5>
       <div class="space-y-3">
         <div 
-          v-for="(issue, index) in results.analysis_summary.performance_issues" 
+          v-for="(issue, index) in (results.analysis_summary?.performance_issues || [])" 
           :key="index"
           class="bg-white border border-orange-200 rounded-lg p-4"
         >
@@ -175,11 +175,11 @@
     </div>
 
     <!-- Recommendations -->
-    <div v-if="results.analysis_summary.recommendations.length > 0" class="space-y-4">
+  <div v-if="(results.analysis_summary?.recommendations || []).length > 0" class="space-y-4">
       <h5 class="text-lg font-semibold text-gray-900">Общие рекомендации</h5>
       <div class="space-y-3">
         <div 
-          v-for="(recommendation, index) in results.analysis_summary.recommendations" 
+          v-for="(recommendation, index) in (results.analysis_summary?.recommendations || [])" 
           :key="index"
           class="bg-white border border-gray-200 rounded-lg p-4"
         >

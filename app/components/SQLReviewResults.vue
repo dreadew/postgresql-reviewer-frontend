@@ -30,26 +30,6 @@
 
     <!-- Query Analysis -->
     <div class="bg-white border border-gray-200 rounded-lg p-6">
-      <h5 class="text-lg font-semibold text-gray-900 mb-4">Анализ производительности</h5>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="text-center p-4 bg-blue-50 rounded-lg">
-          <div class="text-2xl font-bold text-blue-600">{{ results.query_analysis.complexity_score }}</div>
-          <div class="text-sm text-gray-600">Сложность</div>
-        </div>
-        <div class="text-center p-4 bg-purple-50 rounded-lg">
-          <div class="text-2xl font-bold text-purple-600">{{ results.query_analysis.estimated_execution_time }}ms</div>
-          <div class="text-sm text-gray-600">Время выполнения</div>
-        </div>
-        <div class="text-center p-4 bg-orange-50 rounded-lg">
-          <div class="text-lg font-bold text-orange-600">{{ results.query_analysis.resource_usage }}</div>
-          <div class="text-sm text-gray-600">Использование ресурсов</div>
-        </div>
-        <div class="text-center p-4 bg-green-50 rounded-lg">
-          <div class="text-2xl font-bold text-green-600">{{ results.query_analysis.optimization_opportunities.length }}</div>
-          <div class="text-sm text-gray-600">Возможности оптимизации</div>
-        </div>
-      </div>
-
       <!-- Optimization Opportunities -->
       <div v-if="results.query_analysis.optimization_opportunities.length > 0" class="mt-6">
         <h6 class="font-semibold text-gray-900 mb-3">Возможности оптимизации:</h6>
@@ -192,25 +172,6 @@
               </div>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Server Info -->
-    <div class="bg-gray-50 rounded-lg p-4">
-      <h5 class="text-sm font-semibold text-gray-900 mb-2">Информация о сервере</h5>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-        <div>
-          <span class="text-gray-600">Версия:</span>
-          <span class="ml-2 font-medium">{{ results.server_info.version }}</span>
-        </div>
-        <div>
-          <span class="text-gray-600">Хост:</span>
-          <span class="ml-2 font-medium">{{ results.server_info.host }}</span>
-        </div>
-        <div>
-          <span class="text-gray-600">База данных:</span>
-          <span class="ml-2 font-medium">{{ results.server_info.database }}</span>
         </div>
       </div>
     </div>

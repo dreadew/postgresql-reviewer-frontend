@@ -18,16 +18,16 @@
     <!-- Statistics Cards -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <!-- Connections Card -->
-      <div class="group stats-card bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:border-blue-300">
+      <div class="group bg-white rounded-lg border border-blue-200 p-6 hover:border-blue-300 transition-colors hover:shadow-md">
         <div class="flex items-center justify-between mb-4">
-          <div class="p-3 bg-blue-500 rounded-xl shadow-lg group-hover:shadow-xl transition-all duration-300">
-            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="p-3 bg-blue-50 rounded-xl border border-blue-100 group-hover:bg-blue-100 transition-colors">
+            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 1.79 4 4 4h8c2.21 0 4-1.79 4-4V7c0-2.21-1.79-4-4-4H8c-2.21 0-4 1.79-4 4z" />
             </svg>
           </div>
           <div class="text-right">
-            <div class="text-3xl font-bold text-gray-900">{{ connectionsStats.total }}</div>
-            <div class="text-sm font-medium text-gray-600">Подключений</div>
+            <div class="text-3xl font-bold text-slate-900">{{ connectionsStats.total }}</div>
+            <div class="text-sm font-medium text-slate-600">Подключений</div>
           </div>
         </div>
         <div class="flex items-center justify-between">
@@ -38,16 +38,16 @@
       </div>
 
       <!-- Tasks Card -->
-      <div class="group stats-card bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200 hover:border-purple-300">
+      <div class="group bg-white rounded-lg border border-purple-200 p-6 hover:border-purple-300 transition-colors hover:shadow-md">
         <div class="flex items-center justify-between mb-4">
-          <div class="p-3 bg-purple-500 rounded-xl shadow-lg group-hover:shadow-xl transition-all duration-300">
-            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="p-3 bg-purple-50 rounded-xl border border-purple-100 group-hover:bg-purple-100 transition-colors">
+            <svg class="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
           <div class="text-right">
-            <div class="text-3xl font-bold text-gray-900">{{ tasksStats.total }}</div>
-            <div class="text-sm font-medium text-gray-600">Задач</div>
+            <div class="text-3xl font-bold text-slate-900">{{ tasksStats.total }}</div>
+            <div class="text-sm font-medium text-slate-600">Задач</div>
           </div>
         </div>
         <div class="flex items-center justify-between">
@@ -58,16 +58,16 @@
       </div>
 
       <!-- Rules Card -->
-      <div class="group stats-card bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-200 hover:border-emerald-300">
+      <div class="group bg-white rounded-lg border border-emerald-200 p-6 hover:border-emerald-300 transition-colors hover:shadow-md">
         <div class="flex items-center justify-between mb-4">
-          <div class="p-3 bg-emerald-500 rounded-xl shadow-lg group-hover:shadow-xl transition-all duration-300">
-            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-100 group-hover:bg-emerald-100 transition-colors">
+            <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
           <div class="text-right">
-            <div class="text-3xl font-bold text-gray-900">{{ rulesStats.total }}</div>
-            <div class="text-sm font-medium text-gray-600">Правил</div>
+            <div class="text-3xl font-bold text-slate-900">{{ rulesStats.total }}</div>
+            <div class="text-sm font-medium text-slate-600">Правил</div>
           </div>
         </div>
         <div class="flex items-center justify-between">
@@ -98,18 +98,18 @@
 
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <!-- Config Analysis Card -->
-        <div class="group analysis-card bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 hover:border-blue-300">
+        <div class="group bg-white rounded-lg border border-blue-200 hover:border-blue-300 transition-colors hover:shadow-md">
           <div class="p-6">
             <div class="flex items-center justify-between mb-4">
-              <div class="p-3 bg-blue-500 rounded-xl shadow-lg group-hover:shadow-xl transition-all duration-300">
-                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="p-3 bg-blue-50 rounded-xl border border-blue-100 group-hover:bg-blue-100 transition-colors">
+                <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
               </div>
             </div>
-            <h3 class="text-xl font-bold text-gray-900 mb-2">Анализ конфигурации</h3>
-            <p class="text-gray-600 text-sm mb-4 leading-relaxed">
+            <h3 class="text-xl font-bold text-slate-900 mb-2">Анализ конфигурации</h3>
+            <p class="text-slate-600 text-sm mb-4 leading-relaxed">
               Проанализируйте настройки PostgreSQL и получите рекомендации по оптимизации производительности
             </p>
             <button
@@ -122,17 +122,17 @@
         </div>
 
         <!-- SQL Review Card -->
-        <div class="group analysis-card bg-gradient-to-br from-green-50 to-green-100 border-green-200 hover:border-green-300">
+        <div class="group bg-white rounded-lg border border-green-200 hover:border-green-300 transition-colors hover:shadow-md">
           <div class="p-6">
             <div class="flex items-center justify-between mb-4">
-              <div class="p-3 bg-green-500 rounded-xl shadow-lg group-hover:shadow-xl transition-all duration-300">
-                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="p-3 bg-green-50 rounded-xl border border-green-100 group-hover:bg-green-100 transition-colors">
+                <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
               </div>
             </div>
-            <h3 class="text-xl font-bold text-gray-900 mb-2">Анализ SQL</h3>
-            <p class="text-gray-600 text-sm mb-4 leading-relaxed">
+            <h3 class="text-xl font-bold text-slate-900 mb-2">Анализ SQL</h3>
+            <p class="text-slate-600 text-sm mb-4 leading-relaxed">
               Проверьте SQL запросы на производительность, безопасность и соответствие best practices
             </p>
             <button
@@ -145,17 +145,17 @@
         </div>
 
         <!-- Log Analysis Card -->
-        <div class="group analysis-card bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200 hover:border-orange-300">
+        <div class="group bg-white rounded-lg border border-orange-200 hover:border-orange-300 transition-colors hover:shadow-md">
           <div class="p-6">
             <div class="flex items-center justify-between mb-4">
-              <div class="p-3 bg-orange-500 rounded-xl shadow-lg group-hover:shadow-xl transition-all duration-300">
-                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div class="p-3 bg-orange-50 rounded-xl border border-orange-100 group-hover:bg-orange-100 transition-colors">
+                <svg class="w-8 h-8 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
               </div>
             </div>
-            <h3 class="text-xl font-bold text-gray-900 mb-2">Анализ логов</h3>
-            <p class="text-gray-600 text-sm mb-4 leading-relaxed">
+            <h3 class="text-xl font-bold text-slate-900 mb-2">Анализ логов</h3>
+            <p class="text-slate-600 text-sm mb-4 leading-relaxed">
               Анализируйте логи PostgreSQL для выявления ошибок и проблем производительности
             </p>
             <button
@@ -333,13 +333,13 @@
           class="action-card group"
         >
           <div class="flex flex-col items-center text-center p-6">
-            <div class="w-16 h-16 bg-gradient-to-br from-blue-100 to-blue-200 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+            <div class="w-16 h-16 bg-blue-50 border border-blue-100 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-blue-100 transition-colors">
               <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
               </svg>
             </div>
-            <h4 class="text-lg font-semibold text-gray-900 mb-2">Добавить подключение</h4>
-            <p class="text-sm text-gray-600 leading-relaxed">Настроить новое подключение к базе данных PostgreSQL</p>
+            <h4 class="text-lg font-semibold text-slate-900 mb-2">Добавить подключение</h4>
+            <p class="text-sm text-slate-600 leading-relaxed">Настроить новое подключение к базе данных PostgreSQL</p>
           </div>
         </button>
 
@@ -348,13 +348,13 @@
           class="action-card group"
         >
           <div class="flex flex-col items-center text-center p-6">
-            <div class="w-16 h-16 bg-gradient-to-br from-purple-100 to-purple-200 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+            <div class="w-16 h-16 bg-purple-50 border border-purple-100 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-purple-100 transition-colors">
               <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
               </svg>
             </div>
-            <h4 class="text-lg font-semibold text-gray-900 mb-2">Создать задачу</h4>
-            <p class="text-sm text-gray-600 leading-relaxed">Настроить новую задачу автоматического анализа</p>
+            <h4 class="text-lg font-semibold text-slate-900 mb-2">Создать задачу</h4>
+            <p class="text-sm text-slate-600 leading-relaxed">Настроить новую задачу автоматического анализа</p>
           </div>
         </button>
 
@@ -363,7 +363,7 @@
           class="action-card group"
         >
           <div class="flex flex-col items-center text-center p-6">
-            <div class="w-16 h-16 bg-gradient-to-br from-emerald-100 to-emerald-200 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+            <div class="w-16 h-16 bg-emerald-50 border border-emerald-100 rounded-2xl flex items-center justify-center mb-4 group-hover:bg-emerald-100 transition-colors">
               <svg class="w-8 h-8 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>

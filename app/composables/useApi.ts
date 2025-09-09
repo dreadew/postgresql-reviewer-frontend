@@ -10,6 +10,8 @@ import type {
   CreateRuleRequest,
   ReviewRequest,
   ReviewResponse,
+  SQLReviewRequest,
+  SQLReviewResult,
   LogsAnalyzeRequest,
   LogsAnalyzeResponse,
   ConfigAnalyzeRequest,
@@ -148,10 +150,12 @@ class ApiClient {
     return this.makeRequest<any>('/scheduler/queue')
   }
 
-  async getTaskExecutions(taskId?: number, limit?: number): Promise<TaskExecution[]> {
+  async getTaskExecutions(taskId?: number, limit?: number, offset?: number, status?: string): Promise<TaskExecution[]> {
     const params = new URLSearchParams()
     if (taskId) params.append('task_id', taskId.toString())
     if (limit) params.append('limit', limit.toString())
+    if (offset) params.append('offset', offset.toString())
+    if (status) params.append('status', status)
     const query = params.toString()
     
     return this.makeRequest<TaskExecution[]>(`/scheduler/executions${query ? '?' + query : ''}`)
@@ -160,6 +164,10 @@ class ApiClient {
   // Алиасы для обратной совместимости с компонентами
   async getSchedulerTasks(): Promise<ScheduledTask[]> {
     return this.getScheduledTasks()
+  }
+
+  async getSchedulerExecutions(options?: { limit?: number; taskId?: number }): Promise<TaskExecution[]> {
+    return this.getTaskExecutions(options?.taskId, options?.limit)
   }
 
   async createSchedulerTask(task: CreateScheduledTaskRequest): Promise<ScheduledTask> {
@@ -181,12 +189,12 @@ class ApiClient {
   }
 
   // Rules API
-  async getRules(category?: 'config' | 'sql'): Promise<Rule[]> {
+  async getRules(category?: 'config' | 'sql' | 'logs'): Promise<Rule[]> {
     const params = category ? `?category=${category}` : ''
     return this.makeRequest<Rule[]>(`/rules/${params}`)
   }
 
-  async getRule(category: 'config' | 'sql', filename: string): Promise<Rule> {
+  async getRule(category: 'config' | 'sql' | 'logs', filename: string): Promise<Rule> {
     return this.makeRequest<Rule>(`/rules/${category}/${filename}`)
   }
 
@@ -197,7 +205,7 @@ class ApiClient {
     })
   }
 
-  async updateRule(category: 'config' | 'sql', filename: string, rule: Partial<CreateRuleRequest>): Promise<Rule> {
+  async updateRule(category: 'config' | 'sql' | 'logs', filename: string, rule: Partial<CreateRuleRequest>): Promise<Rule> {
     return this.makeRequest<Rule>(`/rules/${category}/${filename}`, {
       method: 'PUT',
       body: JSON.stringify(rule),
@@ -220,6 +228,14 @@ class ApiClient {
   // Review API (новый)
   async reviewSQL(request: ReviewRequest): Promise<ReviewResponse> {
     return this.makeRequest<ReviewResponse>('/review/', {
+      method: 'POST',
+      body: JSON.stringify(request),
+    })
+  }
+
+  // SQL Review API (обновленный)
+  async reviewSQLNew(request: SQLReviewRequest): Promise<SQLReviewResult> {
+    return this.makeRequest<SQLReviewResult>('/review/', {
       method: 'POST',
       body: JSON.stringify(request),
     })

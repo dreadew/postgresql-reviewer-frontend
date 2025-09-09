@@ -90,7 +90,8 @@ defineEmits<Emits>()
 const getCategoryLabel = (category: string): string => {
   const labels: Record<string, string> = {
     'config': 'Конфигурация',
-    'sql': 'SQL запросы'
+    'sql': 'SQL запросы',
+    'logs': 'Анализ логов'
   }
   return labels[category] || category
 }

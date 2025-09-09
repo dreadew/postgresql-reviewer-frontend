@@ -38,6 +38,7 @@
                         <option value="">Выберите категорию</option>
                         <option value="config">Конфигурация</option>
                         <option value="sql">SQL запросы</option>
+                        <option value="logs">Анализ логов</option>
                       </select>
                     </div>
 

@@ -113,5 +113,6 @@ export const useRulesStore = defineStore('rules', {
       state.rules.filter(rule => rule.category === category),
     configRules: (state) => state.rules.filter(rule => rule.category === 'config'),
     sqlRules: (state) => state.rules.filter(rule => rule.category === 'sql'),
+  logsRules: (state) => state.rules.filter(rule => rule.category === 'logs'),
   }
 })
