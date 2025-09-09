@@ -231,7 +231,7 @@ watch(tagsInput, (value) => {
 // Auto-generate vault path based on name
 watch(() => form.name, (name) => {
   if (name && !isEditing.value) {
-    form.vault_path = `/database/creds/${name.toLowerCase().replace(/\s+/g, '-')}`
+    form.vault_path = `database/connections/${name.toLowerCase().replace(/\s+/g, '-')}`
   }
 })
 
